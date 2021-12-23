@@ -23,18 +23,18 @@ public:
         // cout<<this->id<<"\n";
     }
 
-    void printDetails()
-    {
-        cout << "NAME: " << name << "\n";
-        cout << "PROFESSION: " << profession << "\n";
-        cout << "EXPERIENCE: " << experience << "\n";
-        cout << "SKILLS: ";
-        for (int i = 0; i < skills.size(); i++)
-        {
-            cout << skills[i] << " ";
-        }
-        cout << "\nBIO: " << bio << "\n";
-    }
+    // void printDetails()
+    // {
+    //     cout << "NAME: " << name << "\n";
+    //     cout << "PROFESSION: " << profession << "\n";
+    //     cout << "EXPERIENCE: " << experience << "\n";
+    //     cout << "SKILLS: ";
+    //     for (int i = 0; i < skills.size(); i++)
+    //     {
+    //         cout << skills[i] << " ";
+    //     }
+    //     cout << "\nBIO: " << bio << "\n";
+    // }
 };
 // Global adjacency list to store the user data
 vector<vector<detailsOfUser>> adjList(6);
