@@ -71,8 +71,10 @@ public:
     // Acording to skills
     void filterOptionsSkill(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, detailsOfUser startVertex, string value)
     {
-        for(int i=0; i<startVertex.skills.size(); i++){
-            if(startVertex.skills[i] == value){
+        for (int i = 0; i < startVertex.skills.size(); i++)
+        {
+            if (startVertex.skills[i] == value)
+            {
                 filtering.push_back(startVertex);
             }
         }
@@ -98,7 +100,6 @@ public:
         }
         return filtering;
     }
-
 };
 int main()
 
@@ -136,12 +137,9 @@ int main()
     addConnection(User9, User10);
     addConnection(User1, User9);
 
-    
-
     string filterBy;
-    cout<<"How do you wanna filter the users: "<<"\n";
-    cin>>filterBy;
-
+    cout << "How do you wanna filter the users: "<< "\n";
+    cin >> filterBy;
 
     vector<detailsOfUser> result;
 
@@ -149,37 +147,35 @@ int main()
     if (filterBy == "profession")
     {
         string value;
-        cout<<"Enter the profession you are looking for: "<<"\n";
-        cin.clear(); cin.sync();
-        getline(cin,value);
+        cout << "Enter the profession you are looking for: "<< "\n";
+        cin.clear();
+        cin.sync();
+        getline(cin, value);
         result = dhruv.filter(adjList, value, User1);
     }
     else if (filterBy == "experience")
     {
         int experience;
-        cout<<"Enter the experience you want in the user: "<<"\n";
+        cout << "Enter the experience you want in the user: "<< "\n";
         cin >> experience;
         result = dhruv.filterExp(adjList, experience, User1);
     }
 
-    else if(filterBy == "skills"){
+    else if (filterBy == "skills")
+    {
         string skill;
-        cout<<"Enter the skill you are looking for: "<<"\n";
-        cin.clear(); cin.sync();
-        getline(cin,skill);
-        result = dhruv.filterSkill(adjList,skill,User1);
+        cout << "Enter the skill you are looking for: "<< "\n";
+        cin.clear();
+        cin.sync();
+        getline(cin, skill);
+        result = dhruv.filterSkill(adjList, skill, User1);
     }
 
-    cout<<"Results: "<<"\n";
+    cout << "Results: "<< "\n";
     for (int i = 0; i < result.size(); i++)
     {
-        cout << i+1 << ". "<< result[i].name << "\n";
+        cout << i + 1 << ". " << result[i].name << "\n";
     }
     return 0;
 }
-
-/*
-    Mutual Relations:
-    1. If a particular user wants to have a connection with someone else then they can see mutual connections with the other person
-    2. If they are sharing a common interest or same profession then they will have a suggestion to join a group.
-*/
+// Filtering feature
