@@ -8,94 +8,145 @@ public:
     vector<detailsOfUser> filtering;
 
     // Filtering by profession
-    void filterOptions(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, detailsOfUser startVertex, string value)
+    void filterOptions(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, int userID, string value)
     {
-        // We will first filter according to profession
-        if (startVertex.profession == value)
+        int x = filtering.size();
+        for (int i = 0; i < matrix.size(); i++)
         {
-            filtering.push_back(startVertex);
+            for (int j = 0; j < matrix[i].size(); j++)
+            {
+                if (matrix[i][j].id == userID)
+                {
+                    if (matrix[i][j].profession == value)
+                    {
+                        filtering.push_back(matrix[i][j]);
+                        break;
+                    }
+                }
+            }
+            if (filtering.size() > x)
+            {
+                break;
+            }
         }
-        visited[startVertex.id] = true;
-        for (auto x : matrix[startVertex.id])
+
+        visited[userID] = true;
+        for (auto x : matrix[userID])
         {
             if (!visited[x.id])
             {
-                filterOptions(matrix, visited, x, value);
+                filterOptions(matrix, visited, x.id, value);
             }
         }
     }
 
     vector<detailsOfUser> filter(vector<vector<detailsOfUser>> &v, string value, detailsOfUser sv)
     {
-        vector<bool> visited(10, false);
+        vector<bool> visited(16, false);
         for (int i = 0; i < visited.size(); i++)
         {
             if (!visited[i])
             {
-                filterOptions(v, visited, sv, value);
+                filterOptions(v, visited, i, value);
             }
         }
         return filtering;
     }
 
     // filtering by experience
-    void filterOptionsExp(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, detailsOfUser startVertex, int value)
+    void filterOptionsExp(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, int userID, int value)
     {
-        if (startVertex.experience == value)
+        int x = filtering.size();
+        for (int i = 0; i < matrix.size(); i++)
         {
-            filtering.push_back(startVertex);
+            for (int j = 0; j < matrix[i].size(); j++)
+            {
+                if (matrix[i][j].id == userID)
+                {
+                    if (matrix[i][j].experience == value)
+                    {
+                        filtering.push_back(matrix[i][j]);
+                        break;
+                    }
+                }
+            }
+            if (filtering.size() > x)
+            {
+                break;
+            }
         }
-        visited[startVertex.id] = true;
-        for (auto x : matrix[startVertex.id])
+
+        visited[userID] = true;
+        for (auto x : matrix[userID])
         {
             if (!visited[x.id])
             {
-                filterOptionsExp(matrix, visited, x, value);
+                filterOptionsExp(matrix, visited, x.id, value);
             }
         }
     }
 
     vector<detailsOfUser> filterExp(vector<vector<detailsOfUser>> &v, int value, detailsOfUser sv)
     {
-        vector<bool> visited(10, false);
+        vector<bool> visited(16, false);
         for (int i = 0; i < visited.size(); i++)
         {
             if (!visited[i])
             {
-                filterOptionsExp(v, visited, sv, value);
+                filterOptionsExp(v, visited, i, value);
             }
         }
         return filtering;
     }
 
     // Acording to skills
-    void filterOptionsSkill(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, detailsOfUser startVertex, string value)
+    void filterOptionsSkill(vector<vector<detailsOfUser>> &matrix, vector<bool> &visited, int userID, string value)
     {
-        for (int i = 0; i < startVertex.skills.size(); i++)
+        bool c = false, a = false;
+        for (int i = 0; i < matrix.size(); i++)
         {
-            if (startVertex.skills[i] == value)
+            for (int j = 0; j < matrix[i].size(); j++)
             {
-                filtering.push_back(startVertex);
+                if (matrix[i][j].id == userID)
+                {
+                    for (int k= 0; k < matrix[i][j].skills.size(); k++)
+                    {
+                        if (matrix[i][j].skills[k] == value)
+                        {
+                            filtering.push_back(matrix[i][j]);
+                            c=true;
+                            break;
+                        }
+                    }
+                    if(c){
+                        a = true;
+                        break;
+                    }
+                }                
+            }
+            if(a){
+                break;
             }
         }
-        visited[startVertex.id] = true;
-        for (auto x : matrix[startVertex.id])
+
+        visited[userID] = true;
+        for (auto x : matrix[userID])
         {
             if (!visited[x.id])
             {
-                filterOptionsSkill(matrix, visited, x, value);
+                filterOptionsSkill(matrix, visited, x.id, value);
             }
         }
     }
 
     vector<detailsOfUser> filterSkill(vector<vector<detailsOfUser>> &v, string skill, detailsOfUser sv)
     {
-        vector<bool> visited(10, false);
+        vector<bool> visited(16, false);
         for (int i = 0; i < visited.size(); i++)
         {
             if (!visited[i])
             {
-                filterOptionsSkill(v, visited, sv, skill);
+                filterOptionsSkill(v, visited, i, skill);
             }
         }
         return filtering;
@@ -104,6 +155,7 @@ public:
 int main()
 
 {
+
     vector<string> skills1 = {"Web Developer", "Flutter"};
     vector<string> skills2 = {"Web Developer", "Flutter", "React"};
     vector<string> skills3 = {"Web Developer", "Flutter", "DSA"};
@@ -114,6 +166,14 @@ int main()
     vector<string> skills8 = {"Android", "IOS Swift"};
     vector<string> skills9 = {"Web Developer", "Flutter", "CPP"};
     vector<string> skills10 = {"Web Developer", "Flutter", "DSA"};
+
+    vector<string> skills11 = {"Web Developer", "Flutter"};
+    vector<string> skills12 = {"Web Developer", "Flutter", "ML/AI"};
+    vector<string> skills13 = {"ML/AI"};
+    vector<string> skills14 = {"Web Developer", "React Developer"};
+
+    vector<string> skills15 = {"Web Developer", "Flutter"};
+    vector<string> skills16 = {"Web Developer", "DSA"};
 
     detailsOfUser User1("Dhruv", "Software Developer", 10, skills1, "I am a software Developer", 0);
     detailsOfUser User2("Kalash Shah", "React Developer", 10, skills2, "I am React Developer.", 1);
@@ -126,6 +186,14 @@ int main()
     detailsOfUser User9("Jay", "DSA Mentor", 10, skills9, "I am also interested in development", 8);
     detailsOfUser User10("Kewal", "Web Developer", 10, skills10, "I am also interested in development", 9);
 
+    detailsOfUser User11("User 11", "Flutter", 4, skills11, "I am also interested in development", 10);
+    detailsOfUser User12("User 12", "ML/AI", 2, skills12, "I am also interested in development", 11);
+    detailsOfUser User13("User 13", "UI/UX", 9, skills13, "I am also interested in development", 12);
+    detailsOfUser User14("User 14", "Embedded Systems", 10, skills14, "I am also interested in development", 13);
+
+    detailsOfUser User15("User 15", "Software Developer", 10, skills15, "I am also interested in development", 14);
+    detailsOfUser User16("User 16", "Flutter", 8, skills16, "I am also interested in development", 15);
+
     addConnection(User1, User2);
     addConnection(User1, User3);
     addConnection(User2, User5);
@@ -137,8 +205,15 @@ int main()
     addConnection(User9, User10);
     addConnection(User1, User9);
 
+    addConnection(User11, User12);
+    addConnection(User12, User13);
+    addConnection(User13, User14);
+
+    addConnection(User15, User16);
+
     string filterBy;
-    cout << "How do you wanna filter the users: "<< "\n";
+    cout << "How do you wanna filter the users: "
+         << "\n";
     cin >> filterBy;
 
     vector<detailsOfUser> result;
@@ -147,7 +222,8 @@ int main()
     if (filterBy == "profession")
     {
         string value;
-        cout << "Enter the profession you are looking for: "<< "\n";
+        cout << "Enter the profession you are looking for: "
+             << "\n";
         cin.clear();
         cin.sync();
         getline(cin, value);
@@ -156,7 +232,8 @@ int main()
     else if (filterBy == "experience")
     {
         int experience;
-        cout << "Enter the experience you want in the user: "<< "\n";
+        cout << "Enter the experience you want in the user: "
+             << "\n";
         cin >> experience;
         result = dhruv.filterExp(adjList, experience, User1);
     }
@@ -164,18 +241,20 @@ int main()
     else if (filterBy == "skills")
     {
         string skill;
-        cout << "Enter the skill you are looking for: "<< "\n";
+        cout << "Enter the skill you are looking for: "
+             << "\n";
         cin.clear();
         cin.sync();
         getline(cin, skill);
         result = dhruv.filterSkill(adjList, skill, User1);
     }
 
-    cout << "Results: "<< "\n";
+    cout << "Results: "
+         << "\n";
     for (int i = 0; i < result.size(); i++)
     {
         cout << i + 1 << ". " << result[i].name << "\n";
     }
     return 0;
 }
-// Filtering feature
+// Filtering
