@@ -24,7 +24,7 @@ public:
     }
 };
 // Global adjacency list to store the user data
-vector<vector<detailsOfUser>> adjList(10);
+vector<vector<detailsOfUser>> adjList(16);
 
 void addConnection(detailsOfUser d1, detailsOfUser d2)
 {
