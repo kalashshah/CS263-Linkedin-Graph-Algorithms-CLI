@@ -40,7 +40,6 @@ void addConnection(detailsOfUser d1, detailsOfUser d2)
 {
     adjList[d1.id].push_back(d2);
     adjList[d2.id].push_back(d1);
-
 }
 
 // Utility Function
