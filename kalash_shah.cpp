@@ -13,7 +13,8 @@ pair<string, set<detailsOfUser>> suggestBasedOnProfessionBruteForce(vector<vecto
   set<detailsOfUser> suggestionsBasedOnProfession;
   for (int i = 0; i < matrix.size(); i++) {
     for (int j = 0; j < matrix[i].size(); j++) {
-      if (matrix[i][j].profession == user.profession && !(matrix[i][j] == user)) {
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), matrix[i][j]) != adjList[user.id].end();
+      if (matrix[i][j].profession == user.profession && !(matrix[i][j] == user) && !isAlreadyConnected) {
         suggestionsBasedOnProfession.insert(matrix[i][j]);
       }
     }
@@ -35,8 +36,8 @@ pair<string, vector<detailsOfUser>> suggestBasedOnProfession(vector<vector<detai
     idd = st.top();
     st.pop();
     if(!visited[idd]) {
-      // cout << idd << endl;
-      if((*mp[idd]).profession == user.profession && !(*mp[idd] == user)) {
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), *mp[idd]) != adjList[user.id].end();
+      if((*mp[idd]).profession == user.profession && !(*mp[idd] == user) && !isAlreadyConnected) {
         suggestionsBasedOnProfession.push_back(*mp[idd]);
       }
       visited[idd] = true;
@@ -60,7 +61,8 @@ map<string, set<detailsOfUser>> suggestBasedOnSkillsBruteForce(vector<vector<det
   vector<detailsOfUser> suggestionsBasedOnSkills;
   for (int i = 0; i < matrix.size(); i++) {
     for (int j = 0; j < matrix[i].size(); j++) {
-      if(matrix[i][j] == user) 
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), matrix[i][j]) != adjList[user.id].end();
+      if(matrix[i][j] == user || isAlreadyConnected) 
         continue;
       for(string skill : user.skills) {
         // If same skill is found add it to suggested connections according to the skill
@@ -87,11 +89,14 @@ map<string, vector<detailsOfUser>> suggestBasedOnSkills(vector<vector<detailsOfU
     st.pop();
     if(!visited[idd]) {
       // cout << idd << endl;
-      for(string skill : user.skills) {
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), *mp[idd]) != adjList[user.id].end();
+      if(!isAlreadyConnected) {
+        for(string skill : user.skills) {
         // If same skill is found add it to suggested connections according to the skill
         if(find((*mp[idd]).skills.begin(), (*mp[idd]).skills.end(), skill) != (*mp[idd]).skills.end() && !(*mp[idd] == user)) {
           suggested[skill].push_back(*mp[idd]);
         }
+      }
       }
       visited[idd] = true;
     }
@@ -145,61 +150,55 @@ void showSuggestions(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user)
 
 
 int main() {
-    vector<string> skills1 = {"Web Developer", "Flutter"};
-    vector<string> skills2 = {"Web Developer", "Flutter", "React"};
-    vector<string> skills3 = {"Web Developer", "Flutter", "DSA"};
-    vector<string> skills4 = {"Web Developer", "Flutter", "JAVA"};
-    vector<string> skills5 = {"Web Developer", "Flutter", "Algo"};
-    vector<string> skills6 = {"Web Developer"};
-    vector<string> skills7 = {"Web Developer", "BlockChain Developer"};
-    vector<string> skills8 = {"Android", "IOS Swift"};
-    vector<string> skills9 = {"Web Developer", "Flutter", "CPP"};
-    vector<string> skills10 = {"Web Developer", "Flutter", "DSA"};
+  vector<string> skills1 = {"Web Developer", "Flutter"};
+  vector<string> skills2 = {"Web Developer", "Flutter", "React"};
+  vector<string> skills3 = {"Web Developer", "Flutter", "DSA"};
+  vector<string> skills4 = {"Web Developer", "Flutter", "JAVA"};
+  vector<string> skills5 = {"Web Developer", "Flutter", "Algo"};
+  vector<string> skills6 = {"Web Developer"};
+  vector<string> skills7 = {"Web Developer", "BlockChain Developer"};
+  vector<string> skills8 = {"Android", "IOS Swift"};
+  vector<string> skills9 = {"Web Developer", "Flutter", "CPP"};
+  vector<string> skills10 = {"Web Developer", "Flutter", "DSA"};
 
-    vector<string> skills11 = {"Web Developer", "Flutter"};
-    vector<string> skills12 = {"Web Developer", "Flutter", "ML/AI"};
-    vector<string> skills13 = {"ML/AI"};
-    vector<string> skills14 = {"Web Developer", "React Developer"};
+  detailsOfUser User1("Dhruv", "Software Developer", 10, skills1, "I am a software Developer", 0);
+  detailsOfUser User2("Kalash Shah", "React Developer", 10, skills2, "I am React Developer.", 1);
+  detailsOfUser User3("Brijesh", "DSA Mentor", 9, skills3, "I love exploring DS and Algos", 2);
+  detailsOfUser User4("Dhyey", "Software Developer", 8, skills4, "I am Flutter Developer", 3);
+  detailsOfUser User5("Parth", "Designer", 10, skills5, "I am interested in designing", 4);
+  detailsOfUser User6("Hritik", "Software Developer", 5, skills6, "I am also interested in development", 5);
+  detailsOfUser User7("Kalash Kala", "Software Developer", 8, skills7, "I am also interested in development", 6);
+  detailsOfUser User8("Gyan", "React Developer", 10, skills8, "I am also interested in development", 7);
+  detailsOfUser User9("Jay", "DSA Mentor", 10, skills9, "I am also interested in development", 8);
+  detailsOfUser User10("Kewal", "Web Developer", 10, skills10, "I am also interested in development", 9);
+  
+  mp.insert(make_pair(0, new detailsOfUser(User1)));
+  mp.insert(make_pair(1, new detailsOfUser(User2)));
+  mp.insert(make_pair(2, new detailsOfUser(User3)));
+  mp.insert(make_pair(3, new detailsOfUser(User4)));
+  mp.insert(make_pair(4, new detailsOfUser(User5)));
+  mp.insert(make_pair(5, new detailsOfUser(User6)));
+  mp.insert(make_pair(6, new detailsOfUser(User7)));
+  mp.insert(make_pair(7, new detailsOfUser(User8)));
+  mp.insert(make_pair(8, new detailsOfUser(User9)));
+  mp.insert(make_pair(9, new detailsOfUser(User10)));
 
+  addConnection(User1, User2);
+  addConnection(User1, User3);
+  addConnection(User2, User5);
+  addConnection(User5, User4);
+  addConnection(User2, User7);
+  addConnection(User7, User8);
+  addConnection(User8, User6);
+  addConnection(User6, User1);
+  addConnection(User9, User10);
+  addConnection(User1, User9);
 
-    detailsOfUser User1("Dhruv", "Software Developer", 10, skills1, "I am a software Developer", 0);
-    detailsOfUser User2("Kalash Shah", "React Developer", 10, skills2, "I am React Developer.", 1);
-    detailsOfUser User3("Brijesh", "DSA Mentor", 9, skills3, "I love exploring DS and Algos", 2);
-    detailsOfUser User4("Dhyey", "Software Developer", 8, skills4, "I am Flutter Developer", 3);
-    detailsOfUser User5("Parth", "Designer", 10, skills5, "I am interested in designing", 4);
-    detailsOfUser User6("Hritik", "Software Developer", 5, skills6, "I am also interested in development", 5);
-    detailsOfUser User7("Kalash Kala", "Software Developer", 8, skills7, "I am also interested in development", 6);
-    detailsOfUser User8("Gyan", "React Developer", 10, skills8, "I am also interested in development", 7);
-    detailsOfUser User9("Jay", "DSA Mentor", 10, skills9, "I am also interested in development", 8);
-    detailsOfUser User10("Kewal", "Web Developer", 10, skills10, "I am also interested in development", 9);
-    
-    mp.insert(make_pair(0, new detailsOfUser(User1)));
-    mp.insert(make_pair(1, new detailsOfUser(User2)));
-    mp.insert(make_pair(2, new detailsOfUser(User3)));
-    mp.insert(make_pair(3, new detailsOfUser(User4)));
-    mp.insert(make_pair(4, new detailsOfUser(User5)));
-    mp.insert(make_pair(5, new detailsOfUser(User6)));
-    mp.insert(make_pair(6, new detailsOfUser(User7)));
-    mp.insert(make_pair(7, new detailsOfUser(User8)));
-    mp.insert(make_pair(8, new detailsOfUser(User9)));
-    mp.insert(make_pair(9, new detailsOfUser(User10)));
-
-    addConnection(User1, User2);
-    addConnection(User1, User3);
-    addConnection(User2, User5);
-    addConnection(User5, User4);
-    addConnection(User2, User7);
-    addConnection(User7, User8);
-    addConnection(User8, User6);
-    addConnection(User6, User1);
-    addConnection(User9, User10);
-    addConnection(User1, User9);
-
-    // Call functions
-    cout << "Brute force algorithms\n"; 
-    showSuggestionsBruteForce(adjList, User1);
-    cout << "DFS algorithms\n";
-    showSuggestions(adjList, User1);
-    
-    return 0;
+  // Call functions
+  cout << "Brute force algorithms\n"; 
+  showSuggestionsBruteForce(adjList, User1);
+  cout << "DFS algorithms\n";
+  showSuggestions(adjList, User1);
+  
+  return 0;
 }
