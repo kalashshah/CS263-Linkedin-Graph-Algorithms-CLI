@@ -20,9 +20,19 @@ public:
         this->skills = skills;
         this->bio = bio;
         this->id = idd;
-        // cout<<this->id<<"\n";
     }
 };
+
+bool operator< (const detailsOfUser &left, const detailsOfUser &right)
+{
+    return left.id < right.id;
+}
+
+bool operator== (const detailsOfUser &left, const detailsOfUser &right)
+{
+    return left.id == right.id;
+}
+
 // Global adjacency list to store the user data
 vector<vector<detailsOfUser>> adjList(16);
 

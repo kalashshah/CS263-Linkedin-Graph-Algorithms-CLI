@@ -39,7 +39,7 @@ void suggestedCycle(int vertex, int parent, int* colour, int* mark, int* parents
         if(adjList[vertex][i].id==parents[vertex]){
             continue;
         }
-        suggestedCycle(adjList[i].id,vertex,colour,mark,parents,totalCycles);
+        suggestedCycle(adjList[vertex][i].id,vertex,colour,mark,parents,totalCycles);
     }
     
     // after all exploration is done then we assign the colour of this vertex as 2
