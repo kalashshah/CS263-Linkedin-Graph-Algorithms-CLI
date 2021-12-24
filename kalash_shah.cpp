@@ -2,12 +2,14 @@
 #include "main.cpp"
 using namespace std;
 
-// Suggest user suggested connections based on profession
-pair<string, set<detailsOfUser>> suggestedConnectionsBasedOnProfessionBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+map<int, detailsOfUser*> mp;
+
+// Suggest users based on profession using brute force
+pair<string, set<detailsOfUser>> suggestBasedOnProfessionBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
   // iterate through adjacency list named matrix
   // for each user, check if the user has same profession
-  // if yes, add to a vector of suggested connections
-  // return the vector
+  // if yes, add to a set of suggested users
+  // return the set
   set<detailsOfUser> suggestionsBasedOnProfession;
   for (int i = 0; i < matrix.size(); i++) {
     for (int j = 0; j < matrix[i].size(); j++) {
@@ -19,12 +21,41 @@ pair<string, set<detailsOfUser>> suggestedConnectionsBasedOnProfessionBruteForce
   return make_pair(user.profession, suggestionsBasedOnProfession);
 }
 
-// Suggest user suggested connections based on similar skills
-map<string, set<detailsOfUser>> suggestionsBasedOnSkillsBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+// Suggest users based on profession using DFS traversal algorithm
+pair<string, vector<detailsOfUser>> suggestBasedOnProfession(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  // Add the user to the vector if the user has same profession
+  vector<detailsOfUser> suggestionsBasedOnProfession;
+  // visited array to keep track of visited nodes
+  vector<bool> visited(matrix.size(), false);
+  // stack for dfs traversal
+  stack<int> st;
+  int idd = user.id;
+  st.push(idd);
+  while(!st.empty()) {
+    idd = st.top();
+    st.pop();
+    if(!visited[idd]) {
+      // cout << idd << endl;
+      if((*mp[idd]).profession == user.profession && !(*mp[idd] == user)) {
+        suggestionsBasedOnProfession.push_back(*mp[idd]);
+      }
+      visited[idd] = true;
+    }
+    for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
+      if(!visited[i->id]) {
+        st.push(i->id);
+      }
+    }
+  }
+  return make_pair(user.profession, suggestionsBasedOnProfession);
+}
+
+// Suggest users based on similar skills using Brute Force
+map<string, set<detailsOfUser>> suggestBasedOnSkillsBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
   // iterate through adjacency list named matrix
   // for each user, check if the user has a similar skills
-  // if yes, add to a vector of suggested connections
-  // return the vector
+  // if yes, add to a set of suggested connections
+  // return the set
   map<string, set<detailsOfUser>> suggestedConnections;
   vector<detailsOfUser> suggestionsBasedOnSkills;
   for (int i = 0; i < matrix.size(); i++) {
@@ -42,20 +73,69 @@ map<string, set<detailsOfUser>> suggestionsBasedOnSkillsBruteForce(vector<vector
   return suggestedConnections;
 }
 
+// Suggest users based on similar skills using DFS traversal
+map<string, vector<detailsOfUser>> suggestBasedOnSkills(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  map<string, vector<detailsOfUser>> suggested;
+  // visited array to keep track of visited nodes
+  vector<bool> visited(matrix.size(), false);
+  // stack for dfs traversal
+  stack<int> st;
+  int idd = user.id;
+  st.push(idd);
+  while(!st.empty()) {
+    idd = st.top();
+    st.pop();
+    if(!visited[idd]) {
+      // cout << idd << endl;
+      for(string skill : user.skills) {
+        // If same skill is found add it to suggested connections according to the skill
+        if(find((*mp[idd]).skills.begin(), (*mp[idd]).skills.end(), skill) != (*mp[idd]).skills.end() && !(*mp[idd] == user)) {
+          suggested[skill].push_back(*mp[idd]);
+        }
+      }
+      visited[idd] = true;
+    }
+    for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
+      if(!visited[i->id]) {
+        st.push(i->id);
+      }
+    }
+  }
+  return suggested;
+}
+
 // Print the suggested connections
-void showSuggestedConnectionsBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+void showSuggestionsBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
   // Suggest user suggested connections based on profession
-  pair<string, set<detailsOfUser>> suggestedAccToProfession = suggestedConnectionsBasedOnProfessionBruteForce(matrix, user);
-  cout << "Suggested connections based on profession: " << suggestedAccToProfession.first << "\n";
+  pair<string, set<detailsOfUser>> suggestedAccToProfession = suggestBasedOnProfessionBruteForce(matrix, user);
+  cout << "Suggested users based on profession: " << suggestedAccToProfession.first << "\n";
   for (detailsOfUser x : suggestedAccToProfession.second) {
     cout << x.name << "\n";
   }
 
   // Suggest user suggested connections based on similar skills
-  map<string, set<detailsOfUser>> suggestedAccToSkills = suggestionsBasedOnSkillsBruteForce(matrix, user);
-  cout << "\nSuggested connections based on similar skills: \n";
+  map<string, set<detailsOfUser>> suggestedAccToSkills = suggestBasedOnSkillsBruteForce(matrix, user);
+  cout << "\nSuggest users based on similar skills: \n";
   for (auto x : suggestedAccToSkills) {
-    cout << "Profession: " << x.first << "\n";
+    cout << "Skill: " << x.first << "\n";
+    for (detailsOfUser y : x.second) {
+      cout << y.name << "\n";
+    }
+    cout << "\n";
+  }
+}
+
+void showSuggestions(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  pair<string, vector<detailsOfUser>> suggestedAccToProfession = suggestBasedOnProfession(matrix, user);
+  cout << "Suggested users based on profession: " << suggestedAccToProfession.first << "\n";
+  for (detailsOfUser x : suggestedAccToProfession.second) {
+    cout << x.name << "\n";
+  }
+
+  map<string, vector<detailsOfUser>>suggestedAccToSkills = suggestBasedOnSkills(matrix, user);
+  cout << "\nSuggest users based on similar skills: \n";
+  for (auto x : suggestedAccToSkills) {
+    cout << "Skill: " << x.first << "\n";
     for (detailsOfUser y : x.second) {
       cout << y.name << "\n";
     }
@@ -64,8 +144,7 @@ void showSuggestedConnectionsBruteForce(vector<vector<detailsOfUser>> &matrix, d
 }
 
 
-int main(){
-    
+int main() {
     vector<string> skills1 = {"Web Developer", "Flutter"};
     vector<string> skills2 = {"Web Developer", "Flutter", "React"};
     vector<string> skills3 = {"Web Developer", "Flutter", "DSA"};
@@ -82,9 +161,6 @@ int main(){
     vector<string> skills13 = {"ML/AI"};
     vector<string> skills14 = {"Web Developer", "React Developer"};
 
-    vector<string> skills15 = {"Web Developer", "Flutter"};
-    vector<string> skills16 = {"Web Developer", "DSA"};
-
 
     detailsOfUser User1("Dhruv", "Software Developer", 10, skills1, "I am a software Developer", 0);
     detailsOfUser User2("Kalash Shah", "React Developer", 10, skills2, "I am React Developer.", 1);
@@ -96,15 +172,17 @@ int main(){
     detailsOfUser User8("Gyan", "React Developer", 10, skills8, "I am also interested in development", 7);
     detailsOfUser User9("Jay", "DSA Mentor", 10, skills9, "I am also interested in development", 8);
     detailsOfUser User10("Kewal", "Web Developer", 10, skills10, "I am also interested in development", 9);
-
-    detailsOfUser User11("User 11", "Flutter", 4, skills11, "I am also interested in development", 10);
-    detailsOfUser User12("User 12", "ML/AI", 2, skills12, "I am also interested in development", 11);
-    detailsOfUser User13("User 13", "UI/UX", 9, skills13, "I am also interested in development", 12);
-    detailsOfUser User14("User 14", "Embedded Systems", 10, skills14, "I am also interested in development", 13);
-
-    detailsOfUser User15("User 15", "Software Developer", 10, skills15, "I am also interested in development", 14);
-    detailsOfUser User16("User 16", "Flutter", 8, skills16, "I am also interested in development", 15);
-
+    
+    mp.insert(make_pair(0, new detailsOfUser(User1)));
+    mp.insert(make_pair(1, new detailsOfUser(User2)));
+    mp.insert(make_pair(2, new detailsOfUser(User3)));
+    mp.insert(make_pair(3, new detailsOfUser(User4)));
+    mp.insert(make_pair(4, new detailsOfUser(User5)));
+    mp.insert(make_pair(5, new detailsOfUser(User6)));
+    mp.insert(make_pair(6, new detailsOfUser(User7)));
+    mp.insert(make_pair(7, new detailsOfUser(User8)));
+    mp.insert(make_pair(8, new detailsOfUser(User9)));
+    mp.insert(make_pair(9, new detailsOfUser(User10)));
 
     addConnection(User1, User2);
     addConnection(User1, User3);
@@ -117,13 +195,11 @@ int main(){
     addConnection(User9, User10);
     addConnection(User1, User9);
 
-    addConnection(User11, User12);
-    addConnection(User12, User13);
-    addConnection(User13, User14);
-
-    addConnection(User15, User16);
-
-    showSuggestedConnectionsBruteForce(adjList, User1);
+    // Call functions
+    cout << "Brute force algorithms\n"; 
+    showSuggestionsBruteForce(adjList, User1);
+    cout << "DFS algorithms\n";
+    showSuggestions(adjList, User1);
     
     return 0;
 }
