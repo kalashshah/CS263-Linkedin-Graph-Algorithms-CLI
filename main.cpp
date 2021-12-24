@@ -11,7 +11,7 @@ public:
     vector<string> skills;
     string bio;
     int id;
-
+    detailsOfUser(){};
     detailsOfUser(string name, string profession, int exp, vector<string> skills, string bio, int idd)
     {
         this->name = name;
