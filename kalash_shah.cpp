@@ -23,7 +23,7 @@ pair<string, set<detailsOfUser>> suggestBasedOnProfessionBruteForce(vector<vecto
 }
 
 // Suggest users based on profession using DFS traversal algorithm
-pair<string, vector<detailsOfUser>> suggestBasedOnProfession(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+pair<string, vector<detailsOfUser>> suggestBasedOnProfessionDFS(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
   // Add the user to the vector if the user has same profession
   vector<detailsOfUser> suggestionsBasedOnProfession;
   // visited array to keep track of visited nodes
@@ -45,6 +45,64 @@ pair<string, vector<detailsOfUser>> suggestBasedOnProfession(vector<vector<detai
     for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
       if(!visited[i->id]) {
         st.push(i->id);
+      }
+    }
+  }
+  return make_pair(user.profession, suggestionsBasedOnProfession);
+}
+
+// Suggest users based on profession using BFS traversal algorithm
+pair<string, vector<detailsOfUser>> suggestBasedOnProfessionBFS(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  // Add the user to the vector if the user has same profession
+  vector<detailsOfUser> suggestionsBasedOnProfession;
+  // visited array to keep track of visited nodes
+  vector<bool> visited(matrix.size(), false);
+  // queue for bfs traversal
+  queue<int> q;
+  int idd = user.id;
+  q.push(idd);
+  while(!q.empty()) {
+    idd = q.front();
+    q.pop();
+    if(!visited[idd]) {
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), *mp[idd]) != adjList[user.id].end();
+      if((*mp[idd]).profession == user.profession && !(*mp[idd] == user) && !isAlreadyConnected) {
+        suggestionsBasedOnProfession.push_back(*mp[idd]);
+      }
+      visited[idd] = true;
+    }
+    for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
+      if(!visited[i->id]) {
+        q.push(i->id);
+      }
+    }
+  }
+  return make_pair(user.profession, suggestionsBasedOnProfession);
+}
+
+// Suggest users based on profession using A* search algorithm
+pair<string, vector<detailsOfUser>> suggestBasedOnProfessionAStar(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  // Add the user to the vector if the user has same profession
+  vector<detailsOfUser> suggestionsBasedOnProfession;
+  // visited array to keep track of visited nodes
+  vector<bool> visited(matrix.size(), false);
+  // priority queue for A* search
+  priority_queue<int, vector<int>, greater<int>> pq;
+  int idd = user.id;
+  pq.push(idd);
+  while(!pq.empty()) {
+    idd = pq.top();
+    pq.pop();
+    if(!visited[idd]) {
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), *mp[idd]) != adjList[user.id].end();
+      if((*mp[idd]).profession == user.profession && !(*mp[idd] == user) && !isAlreadyConnected) {
+        suggestionsBasedOnProfession.push_back(*mp[idd]);
+      }
+      visited[idd] = true;
+    }
+    for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
+      if(!visited[i->id]) {
+        pq.push(i->id);
       }
     }
   }
@@ -76,7 +134,7 @@ map<string, set<detailsOfUser>> suggestBasedOnSkillsBruteForce(vector<vector<det
 }
 
 // Suggest users based on similar skills using DFS traversal
-map<string, vector<detailsOfUser>> suggestBasedOnSkills(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+map<string, vector<detailsOfUser>> suggestBasedOnSkillsDFS(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
   map<string, vector<detailsOfUser>> suggested;
   // visited array to keep track of visited nodes
   vector<bool> visited(matrix.size(), false);
@@ -109,6 +167,74 @@ map<string, vector<detailsOfUser>> suggestBasedOnSkills(vector<vector<detailsOfU
   return suggested;
 }
 
+// Suggest users based on similar skills using BFS 
+map<string, vector<detailsOfUser>> suggestBasedOnSkillsBFS(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  map<string, vector<detailsOfUser>> suggested;
+  // visited array to keep track of visited nodes
+  vector<bool> visited(matrix.size(), false);
+  // queue for bfs traversal
+  queue<int> q;
+  int idd = user.id;
+  q.push(idd);
+  while(!q.empty()) {
+    idd = q.front();
+    q.pop();
+    if(!visited[idd]) {
+      // cout << idd << endl;
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), *mp[idd]) != adjList[user.id].end();
+      if(!isAlreadyConnected) {
+        for(string skill : user.skills) {
+        // If same skill is found add it to suggested connections according to the skill
+        if(find((*mp[idd]).skills.begin(), (*mp[idd]).skills.end(), skill) != (*mp[idd]).skills.end() && !(*mp[idd] == user)) {
+          suggested[skill].push_back(*mp[idd]);
+        }
+      }
+      }
+      visited[idd] = true;
+    }
+    for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
+      if(!visited[i->id]) {
+        q.push(i->id);
+      }
+    }
+  }
+  return suggested;
+}
+
+// Suggest users based on similar skills using A* search
+map<string, vector<detailsOfUser>> suggestBasedOnSkillsAStar(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  map<string, vector<detailsOfUser>> suggested;
+  // visited array to keep track of visited nodes
+  vector<bool> visited(matrix.size(), false);
+  // priority queue for A* search
+  priority_queue<int, vector<int>, greater<int>> pq;
+  int idd = user.id;
+  pq.push(idd);
+  while(!pq.empty()) {
+    idd = pq.top();
+    pq.pop();
+    if(!visited[idd]) {
+      bool isAlreadyConnected = find(adjList[user.id].begin(), adjList[user.id].end(), *mp[idd]) != adjList[user.id].end();
+      if(!isAlreadyConnected) {
+        for(string skill : user.skills) {
+        // If same skill is found add it to suggested connections according to the skill
+        if(find((*mp[idd]).skills.begin(), (*mp[idd]).skills.end(), skill) != (*mp[idd]).skills.end() && !(*mp[idd] == user)) {
+          suggested[skill].push_back(*mp[idd]);
+        }
+      }
+      }
+      visited[idd] = true;
+    }
+    for(auto i = adjList[idd].begin(); i != adjList[idd].end(); i++) {
+      if(!visited[i->id]) {
+        pq.push(i->id);
+      }
+    }
+  }
+  return suggested;
+}
+
+
 // Print the suggested connections
 void showSuggestionsBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
   // Suggest user suggested connections based on profession
@@ -130,14 +256,50 @@ void showSuggestionsBruteForce(vector<vector<detailsOfUser>> &matrix, detailsOfU
   }
 }
 
-void showSuggestions(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
-  pair<string, vector<detailsOfUser>> suggestedAccToProfession = suggestBasedOnProfession(matrix, user);
+void showSuggestionsDFS(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  pair<string, vector<detailsOfUser>> suggestedAccToProfession = suggestBasedOnProfessionDFS(matrix, user);
   cout << "Suggested users based on profession: " << suggestedAccToProfession.first << "\n";
   for (detailsOfUser x : suggestedAccToProfession.second) {
     cout << x.name << "\n";
   }
 
-  map<string, vector<detailsOfUser>>suggestedAccToSkills = suggestBasedOnSkills(matrix, user);
+  map<string, vector<detailsOfUser>>suggestedAccToSkills = suggestBasedOnSkillsDFS(matrix, user);
+  cout << "\nSuggest users based on similar skills: \n";
+  for (auto x : suggestedAccToSkills) {
+    cout << "Skill: " << x.first << "\n";
+    for (detailsOfUser y : x.second) {
+      cout << y.name << "\n";
+    }
+    cout << "\n";
+  }
+}
+
+void showSuggestionsBFS(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  pair<string, vector<detailsOfUser>> suggestedAccToProfession = suggestBasedOnProfessionBFS(matrix, user);
+  cout << "Suggested users based on profession: " << suggestedAccToProfession.first << "\n";
+  for (detailsOfUser x : suggestedAccToProfession.second) {
+    cout << x.name << "\n";
+  }
+
+  map<string, vector<detailsOfUser>>suggestedAccToSkills = suggestBasedOnSkillsBFS(matrix, user);
+  cout << "\nSuggest users based on similar skills: \n";
+  for (auto x : suggestedAccToSkills) {
+    cout << "Skill: " << x.first << "\n";
+    for (detailsOfUser y : x.second) {
+      cout << y.name << "\n";
+    }
+    cout << "\n";
+  }
+}
+
+void showSuggestionsAStar(vector<vector<detailsOfUser>> &matrix, detailsOfUser &user) {
+  pair<string, vector<detailsOfUser>> suggestedAccToProfession = suggestBasedOnProfessionAStar(matrix, user);
+  cout << "Suggested users based on profession: " << suggestedAccToProfession.first << "\n";
+  for (detailsOfUser x : suggestedAccToProfession.second) {
+    cout << x.name << "\n";
+  }
+
+  map<string, vector<detailsOfUser>>suggestedAccToSkills = suggestBasedOnSkillsAStar(matrix, user);
   cout << "\nSuggest users based on similar skills: \n";
   for (auto x : suggestedAccToSkills) {
     cout << "Skill: " << x.first << "\n";
@@ -195,10 +357,32 @@ int main() {
   addConnection(User1, User9);
 
   // Call functions
-  cout << "Brute force algorithms\n"; 
-  showSuggestionsBruteForce(adjList, User1);
-  cout << "DFS algorithms\n";
-  showSuggestions(adjList, User1);
+  cout << "Enter user id: ";
+  int userID;
+  cin >> userID;
+  cout << "Enter 1 for brute force\nEnter 2 for DFS\nEnter 3 for BFS\nEnter 4 for A*\n";
+  int choice; cin >> choice;
+  switch (choice) {
+    case 1:
+      cout << "Using brute force\n";
+      showSuggestionsBruteForce(adjList, *mp[userID]);
+      break;
+    case 2:
+      cout << "Using DFS\n";
+      showSuggestionsDFS(adjList, *mp[userID]);
+      break;
+    case 3:
+      cout << "Using BFS\n";
+      showSuggestionsBFS(adjList, *mp[userID]);
+      break;
+    case 4:
+      cout << "Using A*\n";
+      showSuggestionsAStar(adjList, *mp[userID]);
+      break;
+    default:
+      cout << "Invalid input\n";
+      break;
+  }
   
   return 0;
 }
